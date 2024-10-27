@@ -3,6 +3,8 @@ import { db } from "../db/connect.js";
 import jwt from "jsonwebtoken";
 
 export const register = (req, res) => {
+  const regex =
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
   const q = "SELECT * FROM users WHERE email=?";
   db.query(q, [req.body.email], (err, data) => {
     if (err) return res.status(500).json(err);
@@ -10,9 +12,15 @@ export const register = (req, res) => {
       return res.status(409).json({ message: "Already registered user!" });
 
     // Check if password is provided
+
     if (!req.body.password) {
       return res.status(400).json({ message: "Password is required!" });
     }
+    if (!regex.test(req.body.password))
+      return res.status(400).json({
+        message:
+          "Password must be at least 8 characters long and include an uppercase letter, lowercase letter, number, and special character.",
+      });
 
     // Hash password
     const salt = bcrypt.genSaltSync(10);
@@ -45,7 +53,10 @@ export const login = (req, res) => {
         httpOnly: true,
       })
       .status(200)
-      .json(other);
+      .json({
+        message: "Successfully logged in !",
+        data: other,
+      });
   });
 };
 

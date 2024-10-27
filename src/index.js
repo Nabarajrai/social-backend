@@ -6,7 +6,12 @@ import authRouter from "./routes/auth.js";
 
 const app = express();
 app.use(express.json());
-app.use(cors());
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true, // if you're using `withCredentials`
+  })
+);
 app.use(cookieParser());
 
 app.use("/api/auth/", authRouter);
