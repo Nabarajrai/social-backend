@@ -38,7 +38,7 @@ export const register = (req, res) => {
 
 export const login = (req, res) => {
   const q = "SELECT * FROM users WHERE  email = ?";
-
+  console.log("login", req.body);
   db.query(q, [req.body.email, req.body.password], (err, data) => {
     if (err) return res.status(500).json(err);
     if (data.length === 0)
