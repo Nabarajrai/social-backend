@@ -7,6 +7,7 @@ import userRouter from "./routes/users.js";
 import authRouter from "./routes/auth.js";
 import postRouter from "./routes/posts.js";
 import commentRouter from "./routes/comments.js";
+import likesRouter from "./routes/likes.js";
 const app = express();
 const PORT = 8080;
 
@@ -41,6 +42,7 @@ app.use("/api/auth", authRouter);
 app.use("/api/users", userRouter);
 app.use("/api", postRouter);
 app.use("/api", commentRouter);
+app.use("/api", likesRouter);
 
 // Upload route
 app.post("/api/uploads", upload.single("img"), (req, res) => {
