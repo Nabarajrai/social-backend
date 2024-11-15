@@ -6,7 +6,7 @@ import cookieParser from "cookie-parser";
 import userRouter from "./routes/users.js";
 import authRouter from "./routes/auth.js";
 import postRouter from "./routes/posts.js";
-
+import commentRouter from "./routes/comments.js";
 const app = express();
 const PORT = 8080;
 
@@ -21,7 +21,7 @@ app.use(
 );
 app.use(cookieParser());
 
-// Multer storage configuration
+// Multer storage configurationf
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, path.join(process.cwd(), "src/uploads"));
@@ -37,9 +37,10 @@ const upload = multer({ storage: storage });
 app.use("/uploads", express.static(path.join(process.cwd(), "src/uploads")));
 
 // Routes
-app.use("/api/auth/", authRouter);
+app.use("/api/auth", authRouter);
 app.use("/api/users", userRouter);
 app.use("/api", postRouter);
+app.use("/api", commentRouter);
 
 // Upload route
 app.post("/api/uploads", upload.single("img"), (req, res) => {

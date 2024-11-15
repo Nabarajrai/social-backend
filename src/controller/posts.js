@@ -12,7 +12,7 @@ export const posts = (req, res) => {
    FROM posts AS p 
    JOIN users AS u ON (u.id = p.userId) 
    LEFT JOIN relationships AS r ON (p.userId = r.followedId) 
-   WHERE r.followerId = ? OR p.userId = ? ORDER BY p.created_date
+   WHERE r.followerId = ? OR p.userId = ? ORDER BY p.created_date DESC
 `;
     db.query(q, [userInfo.id, userInfo.id], (err, data) => {
       if (err) return res.status(500).json(err);
