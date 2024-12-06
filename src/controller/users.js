@@ -10,7 +10,8 @@ export const getUser = async (req, res) => {
     const VALUES = [req.params.userId];
     db.query(q, [VALUES], (err, result) => {
       if (err) return res.status(500).json(err);
-      return res.status(200).json(result);
+      const { password, ...others } = result[0];
+      return res.status(200).json(others);
     });
   });
 };
