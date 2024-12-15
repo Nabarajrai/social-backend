@@ -8,7 +8,7 @@ export const posts = (req, res) => {
   jwt.verify(token, "secret", (err, userInfo) => {
     if (err)
       return res.status(403).json({ message: "token verification failed  " });
-    const q = `SELECT p.*, u.id AS userId, username, coverpic 
+    const q = `SELECT p.*, u.id AS userId, username, coverpic,profilePic
    FROM posts AS p 
    JOIN users AS u ON (u.id = p.userId) 
    LEFT JOIN relationships AS r ON (p.userId = r.followedId) 
@@ -38,6 +38,22 @@ export const addPost = (req, res) => {
     db.query(q, [VALUES], (err, data) => {
       if (err) return res.status(500).json(err);
       return res.status(200).json({ message: "Successfully created post!" });
+    });
+  });
+};
+
+export const userPosts = (req, res) => {
+  console.log("token", req.params);
+  const token = req.cookies.access_token;
+  if (!token) return res.status(401).json({ message: "Not logged in!" });
+  jwt.verify(token, "secret", (err, userInfo) => {
+    if (err)
+      return res.status(403).json({ message: "token verification failed  " });
+    const q = `SELECT p.*, u.id AS userId, username, coverpic,profilePic FROM posts AS p JOIN users AS u ON (u.id = p.userId)  WHERE  p.userId = ? ORDER BY p.created_date DESC
+`;
+    db.query(q, [req.params.id], (err, data) => {
+      if (err) return res.status(500).json(err);
+      return res.status(200).json(data);
     });
   });
 };
