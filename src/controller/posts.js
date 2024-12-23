@@ -57,3 +57,17 @@ export const userPosts = (req, res) => {
     });
   });
 };
+
+export const deletePosts = (req, res) => {
+  const token = req.cookies.access_token;
+  if (!token) return res.status(401).json({ message: "Not logged in!" });
+  jwt.verify(token, "secret", (err, userInfo) => {
+    if (err)
+      return res.status(403).json({ message: "token verification failed  " });
+    const q = `DELETE  FROM posts WHERE id=? AND userId=?`;
+    db.query(q, [req.params.id, userInfo.id], (err, data) => {
+      if (err) return res.status(500).json(err);
+      return res.status(200).json({ message: "Successfully deleted!" });
+    });
+  });
+};
