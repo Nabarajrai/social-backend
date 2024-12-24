@@ -9,6 +9,10 @@ import postRouter from "./routes/posts.js";
 import commentRouter from "./routes/comments.js";
 import likesRouter from "./routes/likes.js";
 import relationshipsRouter from "./routes/relationships.js";
+import fs from "fs";
+import { dirname } from "path";
+import { fileURLToPath } from "url";
+
 const app = express();
 const PORT = 8080;
 
@@ -56,6 +60,32 @@ app.post("/api/uploads", upload.single("img"), (req, res) => {
   // Full URL for uploaded file
   const fileUrl = `http://localhost:${PORT}/uploads/${req.file.filename}`;
   res.status(200).json(fileUrl);
+});
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+const BASE_DIR = path.resolve(__dirname, "uploads"); // Restrict deletions to the "uploads" directory
+
+app.delete("/api/deleteFile", (req, res) => {
+  const filePath = req.body.filePath;
+
+  if (!filePath) {
+    return res.status(400).json({ error: "File path is required" });
+  }
+
+  const fullPath = path.join(BASE_DIR, filePath);
+  if (!fullPath.startsWith(BASE_DIR)) {
+    return res.status(400).json({ error: "Invalid file path" });
+  }
+
+  fs.unlink(fullPath, (err) => {
+    if (err) {
+      console.error("Failed to delete file:", err.message);
+      return res.status(500).json({ error: "Failed to delete file" });
+    }
+
+    res.status(200).json({ message: "File deleted successfully" });
+  });
 });
 
 app.listen(PORT, () => {
